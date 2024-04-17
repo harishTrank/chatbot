@@ -1,5 +1,4 @@
 const createError = require("http-errors");
-
 const getMessagesService = require("../../services/messages/getMessages");
 
 const getMessagesByRoomId = async (req, res, next) => {
@@ -28,3 +27,8 @@ const getMessagesByRoomId = async (req, res, next) => {
 };
 
 module.exports = getMessagesByRoomId;
+// query: {
+//   conversationId: route?.params?.conversationChatID,
+//   _start: startIndexMessage,
+//   _limit: 50,
+// },

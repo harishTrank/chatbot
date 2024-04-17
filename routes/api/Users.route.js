@@ -1,7 +1,10 @@
+const getUserbyId = require("../../controller/user/getUserbyId");
+const searchUser = require("../../controller/user/searchUser");
 const getAllUser = require("../../controller/userlist");
-const validateAccessToken = require("../../middleware/jwt_validation");
 const router = require("express").Router();
 
-router.get("/get", validateAccessToken, getAllUser);
+router.get("/get", getAllUser);
+router.get("/search", searchUser);
+router.get("/getuser", getUserbyId);
 
 module.exports = router;

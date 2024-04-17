@@ -1,4 +1,3 @@
-// const formidable = require("formidable");
 const User = require("../models/User.model");
 const Conversation = require("../models/Conversation.model");
 const { ObjectId } = require("mongoose").Types;
@@ -7,6 +6,30 @@ const messageModal = require("../models/Message.model");
 module.exports = (io) => {
   io.on("connect", (socket) => {
     console.log("A user connected");
+
+    socket.on("save socketid", async (data) => {
+      await User.findByIdAndUpdate(data.userId, { socketId: socket.id });
+    });
+
+    socket.on("conversation list", async (data) => {
+      const conversations = await Conversation.aggregate([
+        {
+          $match: {
+            members: ObjectId(data.userId),
+          },
+        },
+        {
+          $lookup: {
+            from: "user",
+            localField: "members",
+            foreignField: "_id",
+            as: "membersInfo",
+          },
+        },
+      ]);
+      socket.emit("conversation list", conversations);
+    });
+
     socket.on("join", async (data) => {
       const { userId, conversationId } = data;
       await User.findByIdAndUpdate(userId, { socketId: socket.id });
@@ -21,45 +44,66 @@ module.exports = (io) => {
       console.log(`User ${userId} joined conversation ${conversationId}`);
     });
 
-    socket.on("leave", async (userId) => {
-      await User.findByIdAndUpdate(userId, { socketId: "" });
-      console.log(`User ${userId} left conversation`);
+    socket.on("leave", async (data) => {
+      await User.findByIdAndUpdate(data.userId, { socketId: "" });
+    });
+
+    socket.on("heartbeat", async (data) => {
+      console.log("heartbeat");
+      if (data.userId) {
+        await User.findOneAndUpdate(
+          {
+            socketId: socket.id,
+          },
+          {
+            status: "online",
+          },
+          {
+            new: true,
+          }
+        );
+      }
     });
 
     socket.on("send message", async (data) => {
       const sender = await User.findById(data.senderId);
       const receiver = await User.findById(data.receiverId);
-      if (receiver && receiver.socketId) {
-        if (data.type === "text") {
-          await messageModal.create({
-            type: data.type,
-            message: data.message,
-            sender: sender,
-            receiver: receiver,
-            conversation: data.conversationId,
-            read_by: [
-              {
-                user: ObjectId(data.senderId),
-              },
-            ],
-          });
-          io.to(receiver.socketId).emit("send message", {
-            sender: sender.name,
-            message: data.message,
-            type: data.type,
-          });
-        }
+      if (data.type === "text") {
+        const latestMessage = await messageModal.create({
+          type: data.type,
+          message: data.message,
+          sender: sender,
+          receiver: receiver,
+          conversation: data.conversationId,
+          read_by: [
+            {
+              user: ObjectId(data.senderId),
+            },
+          ],
+        });
+        io.to(receiver.socketId).emit("send message", {
+          sender: sender.name,
+          message: data.message,
+          latestMessageId: latestMessage?._id,
+          type: data.type,
+        });
       }
     });
 
-    socket.on("disconnect", async () => {
+    socket.on("disconnect", async (data) => {
       console.log("User disconnected");
-      const user = await User.findOne({ socketId: socket.id });
-      if (user) {
-        user.socketId = "";
-        await user.save();
-        console.log(`User ${user._id} disconnected`);
-      }
+      await User.findOneAndUpdate(
+        {
+          socketId: socket.id,
+        },
+        {
+          status: "offline",
+          socketId: "",
+        },
+        {
+          new: true,
+        }
+      );
     });
   });
 };
