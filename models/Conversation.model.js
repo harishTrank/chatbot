@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 const ConversationSchema = new Schema(
   {
     members: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
-    hidden_by: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
     type: { type: String, required: true, default: "single" },
     last_message: { type: Schema.Types.ObjectId, ref: "Message" },
     readBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
