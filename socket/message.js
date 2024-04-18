@@ -49,7 +49,6 @@ module.exports = (io) => {
     });
 
     socket.on("heartbeat", async (data) => {
-      console.log("heartbeat");
       if (data.userId) {
         await User.findOneAndUpdate(
           {
