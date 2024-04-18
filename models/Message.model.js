@@ -24,7 +24,7 @@ const MessageSchema = new Schema(
     message: { type: String, required: true },
     postMessage: { type: Schema.Types.ObjectId, ref: "Conversation" },
     sender: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    receiver: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    receiver: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
     conversation: {
       type: Schema.Types.ObjectId,
       ref: "Conversation",

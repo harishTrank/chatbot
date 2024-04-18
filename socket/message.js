@@ -67,25 +67,25 @@ module.exports = (io) => {
 
     socket.on("send message", async (data) => {
       const sender = await User.findById(data.senderId);
-      const receiver = await User.findById(data.receiverId);
+      const receivers = await User.find({ _id: { $in: data.receiverIds } });
       if (data.type === "text") {
         const latestMessage = await messageModal.create({
           type: data.type,
           message: data.message,
           sender: sender,
-          receiver: receiver,
+          receivers: receivers,
           conversation: data.conversationId,
-          read_by: [
-            {
-              user: ObjectId(data.senderId),
-            },
-          ],
+          read_by: {
+            user: ObjectId(data.senderId),
+          },
         });
-        io.to(receiver.socketId).emit("send message", {
-          sender: sender.name,
-          message: data.message,
-          latestMessageId: latestMessage?._id,
-          type: data.type,
+        receivers.forEach((receiver) => {
+          io.to(receiver.socketId).emit("send message", {
+            sender: sender.name,
+            message: data.message,
+            latestMessageId: latestMessage?._id,
+            type: data.type,
+          });
         });
       }
     });

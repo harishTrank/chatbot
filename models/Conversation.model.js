@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ConversationSchema = new Schema(
   {
+    name: { type: String },
+    avatar_url: { type: String },
     members: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
     type: { type: String, required: true, default: "single" },
     last_message: { type: Schema.Types.ObjectId, ref: "Message" },
