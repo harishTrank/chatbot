@@ -8,4 +8,13 @@ module.exports = {
     refreshSecret: process.env.REFRESH_TOKEN_SECRET,
     refreshTokenLife: process.env.REFRESH_TOKEN_LIFE,
   },
+  aws: {
+    bucketName: process.env.AWS_BUCKET_NAME,
+    fileURL: `https://s3-${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_BUCKET_NAME}`,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
+    sesSenderAddress:
+      process.env.AWS_SENDER_ADDRESS || "harish.developer19@gmail.com",
+  },
 };

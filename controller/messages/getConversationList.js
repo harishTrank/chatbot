@@ -49,11 +49,6 @@ const getConversationList = async (req, res, next) => {
         },
       },
       {
-        $unwind: {
-          path: "$unread_count",
-        },
-      },
-      {
         $lookup: {
           from: "message",
           let: { conversation_id: "$_id" },
