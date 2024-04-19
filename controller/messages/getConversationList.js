@@ -19,6 +19,74 @@ const getConversationList = async (req, res, next) => {
           as: "membersInfo",
         },
       },
+      {
+        $lookup: {
+          from: "message",
+          let: { conversation_id: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$conversation", "$$conversation_id"] },
+                    { $not: { $in: [ObjectId(userId), "$deleted_by"] } },
+                  ],
+                },
+              },
+            },
+            {
+              $match: {
+                read_by: {
+                  $not: { $elemMatch: { user: ObjectId(userId) } },
+                },
+              },
+            },
+            {
+              $count: "total_count",
+            },
+          ],
+          as: "unread_count",
+        },
+      },
+      {
+        $lookup: {
+          from: "message",
+          let: { conversation_id: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$conversation", "$$conversation_id"],
+                },
+              },
+            },
+            {
+              $sort: { created_at: -1 },
+            },
+            {
+              $limit: 1,
+            },
+            {
+              $project: {
+                _id: 1,
+                created_at: 1,
+              },
+            },
+          ],
+          as: "latestMessage",
+        },
+      },
+      {
+        $unwind: {
+          path: "$latestMessage",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $sort: {
+          "latestMessage.created_at": -1,
+        },
+      },
     ]);
     res.status(200).json({
       success: true,

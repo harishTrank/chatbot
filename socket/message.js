@@ -26,6 +26,74 @@ module.exports = (io) => {
             as: "membersInfo",
           },
         },
+        {
+          $lookup: {
+            from: "message",
+            let: { conversation_id: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$conversation", "$$conversation_id"] },
+                      { $not: { $in: [ObjectId(data.userId), "$deleted_by"] } },
+                    ],
+                  },
+                },
+              },
+              {
+                $match: {
+                  read_by: {
+                    $not: { $elemMatch: { user: ObjectId(data.userId) } },
+                  },
+                },
+              },
+              {
+                $count: "total_count",
+              },
+            ],
+            as: "unread_count",
+          },
+        },
+        {
+          $lookup: {
+            from: "message",
+            let: { conversation_id: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$conversation", "$$conversation_id"],
+                  },
+                },
+              },
+              {
+                $sort: { created_at: -1 },
+              },
+              {
+                $limit: 1,
+              },
+              {
+                $project: {
+                  _id: 1,
+                  created_at: 1,
+                },
+              },
+            ],
+            as: "latestMessage",
+          },
+        },
+        {
+          $unwind: {
+            path: "$latestMessage",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $sort: {
+            "latestMessage.created_at": -1,
+          },
+        },
       ]);
       socket.emit("conversation list", conversations);
     });
@@ -39,8 +107,13 @@ module.exports = (io) => {
           _id: ObjectId(conversationId),
         });
       }
-
       socket.join(conversationId);
+      if (userId && conversationId) {
+        await messageModal.updateMany(
+          { conversation: conversationId, sender: { $ne: userId } },
+          { $addToSet: { read_by: { user: userId } } }
+        );
+      }
       console.log(`User ${userId} joined conversation ${conversationId}`);
     });
 
