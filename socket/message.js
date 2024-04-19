@@ -56,6 +56,11 @@ module.exports = (io) => {
           },
         },
         {
+          $unwind: {
+            path: "$unread_count",
+          },
+        },
+        {
           $lookup: {
             from: "message",
             let: { conversation_id: "$_id" },
@@ -72,12 +77,6 @@ module.exports = (io) => {
               },
               {
                 $limit: 1,
-              },
-              {
-                $project: {
-                  _id: 1,
-                  created_at: 1,
-                },
               },
             ],
             as: "latestMessage",

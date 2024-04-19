@@ -49,6 +49,11 @@ const getConversationList = async (req, res, next) => {
         },
       },
       {
+        $unwind: {
+          path: "$unread_count",
+        },
+      },
+      {
         $lookup: {
           from: "message",
           let: { conversation_id: "$_id" },
@@ -65,12 +70,6 @@ const getConversationList = async (req, res, next) => {
             },
             {
               $limit: 1,
-            },
-            {
-              $project: {
-                _id: 1,
-                created_at: 1,
-              },
             },
           ],
           as: "latestMessage",
