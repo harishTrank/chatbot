@@ -21,8 +21,8 @@ const MessageSchema = new Schema(
       required: true,
       enum: ["text", "image", "video", "audio", "post", "document"],
     },
-    message: { type: String, required: true },
-    postMessage: { type: Schema.Types.ObjectId, ref: "Conversation" },
+    message: { type: String },
+    image: { type: String },
     sender: { type: Schema.Types.ObjectId, ref: "User", required: true },
     receiver: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
     conversation: {

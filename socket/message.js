@@ -134,8 +134,9 @@ module.exports = (io) => {
     socket.on("send message", async (data) => {
       const sender = await User.findById(data.senderId);
       const receivers = await User.find({ _id: { $in: data.receiverIds } });
+      let latestMessage;
       if (data.type === "text") {
-        const latestMessage = await messageModal.create({
+        latestMessage = await messageModal.create({
           type: data.type,
           message: data.message,
           sender: sender,
@@ -145,15 +146,27 @@ module.exports = (io) => {
             user: ObjectId(data.senderId),
           },
         });
-        receivers.forEach((receiver) => {
-          io.to(receiver.socketId).emit("send message", {
-            sender: sender.name,
-            message: data.message,
-            latestMessageId: latestMessage?._id,
-            type: data.type,
-          });
+      } else if (data.type === "image") {
+        latestMessage = await messageModal.create({
+          type: data.type,
+          message: data.message,
+          sender: sender,
+          image: data.image,
+          receivers: receivers,
+          conversation: data.conversationId,
+          read_by: {
+            user: ObjectId(data.senderId),
+          },
         });
       }
+      receivers.forEach((receiver) => {
+        io.to(receiver.socketId).emit("send message", {
+          sender: sender.name,
+          message: data.message,
+          latestMessageId: latestMessage?._id,
+          type: data.type,
+        });
+      });
     });
 
     socket.on("disconnect", async (data) => {

@@ -74,6 +74,7 @@ const getCurrentMessage = async (req, res, next) => {
           type: 1,
           message: 1,
           read_by: 1,
+          image: 1,
           sender: {
             _id: 1,
             name: 1,

@@ -72,6 +72,7 @@ const getMessages = async (conversationId, userId, startIndex, viewSize) => {
           message: 1,
           // TODO: Change this field to show only for current user messages only
           read_by: 1,
+          image: 1,
           sender: {
             _id: 1,
             name: 1,

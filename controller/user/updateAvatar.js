@@ -1,7 +1,6 @@
 const formidable = require("formidable");
 const jwt = require("jsonwebtoken");
 const { accessSecret } = require("../../config/keys").jwt;
-const crypto = require("crypto");
 
 const uploadFiles = require("../../services/upload-files");
 const UserModel = require("../../models/User.model");
@@ -9,26 +8,13 @@ const UserModel = require("../../models/User.model");
 const updateAvatar = async (req, res, next) => {
   try {
     let bearerToken, token;
-    let userId;
-
-    if (req.query.Authorization) {
-      let algorithm = "aes256";
-      let key = "ExchangePasswordPasswordExchange";
-      let encrypted = req.query.Authorization;
-      let iv = "75ee244a7c9857f8";
-
-      let decipher = crypto.createDecipheriv(algorithm, key, iv);
-      userId =
-        decipher.update(encrypted, "hex", "utf8") + decipher.final("utf8");
-    } else {
-      bearerToken = req.headers["authorization"];
-      token =
-        bearerToken.split(" ")[0] === "Bearer"
-          ? bearerToken.split(" ")[1]
-          : bearerToken;
-      payload = jwt.verify(token, accessSecret);
-      userId = payload.data._id;
-    }
+    const { userId } = req.query;
+    bearerToken = req.headers["authorization"];
+    token =
+      bearerToken.split(" ")[0] === "Bearer"
+        ? bearerToken.split(" ")[1]
+        : bearerToken;
+    payload = jwt.verify(token, accessSecret);
 
     const form = new formidable.IncomingForm();
     form.parse(req, async (err, fields, files) => {
@@ -57,7 +43,6 @@ const updateAvatar = async (req, res, next) => {
             };
           })
         );
-        console.log("userId", userId);
         const uploadAvatarPhoto = await UserModel.findOneAndUpdate(
           { _id: userId },
           { avatar_url: allFileUploadedArray[0].url },
