@@ -3,7 +3,7 @@ const { ObjectId } = require("mongoose").Types;
 const MessageModal = require("../../models/Message.model");
 
 const getCurrentMessage = async (req, res, next) => {
-  const { _id: userId } = req.user.data;
+  const { _id: userId } = req.user.data.user;
   const { query } = req;
 
   try {
@@ -98,6 +98,13 @@ const getCurrentMessage = async (req, res, next) => {
         },
       },
     ]);
+
+    if (userId && query.conversationId) {
+      await MessageModal.updateMany(
+        { conversation: query.conversationId, sender: { $ne: userId } },
+        { $addToSet: { read_by: { user: userId } } }
+      );
+    }
 
     res.status(200).json({
       message: "success",
