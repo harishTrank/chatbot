@@ -131,6 +131,15 @@ module.exports = (io) => {
       }
     });
 
+    socket.on("delete message", async (data) => {
+      const receivers = await User.find({ _id: { $in: data.receiverIds } });
+      receivers.forEach((receiver) => {
+        io.to(receiver.socketId).emit("delete message", {
+          messageId: data.messageId,
+        });
+      });
+    });
+
     socket.on("send message", async (data) => {
       const sender = await User.findById(data.senderId);
       const receivers = await User.find({ _id: { $in: data.receiverIds } });
