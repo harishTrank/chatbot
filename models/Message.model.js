@@ -32,6 +32,7 @@ const MessageSchema = new Schema(
     },
     read_by: [readByRecipientSchema],
     deleted_by: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    deleteMessage: { type: Boolean, default: false },
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
