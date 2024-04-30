@@ -54,7 +54,7 @@ mongoose
   })
   .then(() => console.log("MongoDB Connected!"))
   .then(() => {
-    const PORT = process.env.PORT || 4000;
+    const PORT = process.env.PORT || 7000;
     http.listen(PORT, console.log("Server Started on port"));
     socketMessaging(io);
   })
