@@ -1,7 +1,6 @@
 const testUser = require("../../models/User.model");
 const bcrypt = require("bcryptjs");
 const tokenUserModel = require("../../models/Token.model");
-
 const {
   generateAccessToken,
   generateRefreshToken,
