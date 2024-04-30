@@ -6,5 +6,6 @@ const byPassLoginUser = require("../../controller/auth/byPassLoginUser");
 router.post("/register", registerUser);
 router.post("/login/user", loginUser);
 router.post("/login/bypass", byPassLoginUser);
+router.post("/sessionstore", sessionStorage);
 
 module.exports = router;
