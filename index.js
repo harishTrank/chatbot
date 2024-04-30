@@ -7,8 +7,12 @@ const http = require("http").Server(app);
 const routes = require("./routes");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require("path");
 
 app.use(cors());
+
+// Serve static files from the React build
+app.use(express.static(path.join(__dirname, "./build")));
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
@@ -35,6 +39,11 @@ const socketMessaging = require("./socket/message");
 app.use(express.json({ limit: "50mb", extended: true }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(morgan("combined"));
+
+// Serve the React app for any other route
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "./build/index.html"));
+});
 
 mongoose.set("useCreateIndex", true);
 mongoose
