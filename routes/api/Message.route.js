@@ -7,6 +7,7 @@ const createChatGroup = require("../../controller/messages/createChatGroup");
 const softDeleteMessage = require("../../controller/messages/softDeleteMessage");
 const checkGroupAdmin = require("../../controller/messages/checkGroupAdmin");
 const editGroupConversation = require("../../controller/messages/editGroupConversation");
+const deleteGroup = require("../../controller/messages/deleteGroup");
 
 const router = require("express").Router();
 
@@ -19,5 +20,6 @@ router.post("/creategroup", createChatGroup);
 router.delete("/softdelete", softDeleteMessage);
 router.get("/checkadmin", checkGroupAdmin);
 router.put("/editgroup", editGroupConversation);
+router.delete("/deletegroup", deleteGroup);
 
 module.exports = router;
