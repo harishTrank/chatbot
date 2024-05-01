@@ -5,6 +5,8 @@ const getConversationList = require("../../controller/messages/getConversationLi
 const getCurrentMessage = require("../../controller/messages/getCurrentMessage");
 const createChatGroup = require("../../controller/messages/createChatGroup");
 const softDeleteMessage = require("../../controller/messages/softDeleteMessage");
+const checkGroupAdmin = require("../../controller/messages/checkGroupAdmin");
+const editGroupConversation = require("../../controller/messages/editGroupConversation");
 
 const router = require("express").Router();
 
@@ -15,5 +17,7 @@ router.get("/current", getCurrentMessage);
 router.get("/conversation", getConversationList);
 router.post("/creategroup", createChatGroup);
 router.delete("/softdelete", softDeleteMessage);
+router.get("/checkadmin", checkGroupAdmin);
+router.put("/editgroup", editGroupConversation);
 
 module.exports = router;
