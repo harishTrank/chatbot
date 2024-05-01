@@ -7,6 +7,6 @@ const forgotPassword = require("../../controller/auth/forgotPassword");
 router.post("/register", registerUser);
 router.post("/login/user", loginUser);
 router.post("/login/bypass", byPassLoginUser);
-router.post("/forgot", forgotPassword);
+router.get("/forgot", forgotPassword);
 
 module.exports = router;
