@@ -14,6 +14,7 @@ const createConversation = async (req, res, next) => {
       );
     const existingConversation = await Conversation.findOne({
       members: { $all: usersList },
+      type: "single",
     }).select("-hidden_by");
     if (existingConversation) {
       return res.status(200).json({
