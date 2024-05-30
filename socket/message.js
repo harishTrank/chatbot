@@ -176,6 +176,13 @@ module.exports = (io) => {
           type: data.type,
         });
       });
+
+      io.to(sender.socketId).emit("send message", {
+        sender: sender.name,
+        message: data.message,
+        latestMessageId: latestMessage?._id,
+        type: data.type,
+      });
     });
 
     socket.on("disconnect", async (data) => {
