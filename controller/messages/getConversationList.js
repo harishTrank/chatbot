@@ -1,6 +1,5 @@
 const { ObjectId } = require("mongoose").Types;
 const Conversation = require("../../models/Conversation.model");
-const User = require("../../models/User.model");
 
 const getConversationList = async (req, res, next) => {
   try {

@@ -174,6 +174,7 @@ module.exports = (io) => {
           message: data.message,
           latestMessageId: latestMessage?._id,
           type: data.type,
+          latestMessage,
         });
       });
 
@@ -182,6 +183,7 @@ module.exports = (io) => {
         message: data.message,
         latestMessageId: latestMessage?._id,
         type: data.type,
+        latestMessage,
       });
     });
 
